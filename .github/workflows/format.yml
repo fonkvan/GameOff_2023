@@ -1,0 +1,19 @@
+name: format
+
+on:
+  pull_request:
+    branches:
+      -main
+  push:
+
+jobs:
+  format:
+    runs-on: windows
+
+    steps:
+    - name: go to scripts folder
+      run: cd Devops
+    - name: run script
+      run: FormatAllFiles.bat
+  
+    
