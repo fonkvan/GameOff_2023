@@ -70,6 +70,12 @@ Saved/*
 Intermediate/*
 Plugins/*/Intermediate/*
 
+#Rider plugin unnecessary for VS users
+Plugins/Developer/RiderLink
+
+#Rider User specific files
+.idea/*
+
 # Cache files for the editor to use
 DerivedDataCache/*
 Platforms/HoloLens/Config/HoloLensEngine.ini
