@@ -33,7 +33,7 @@ protected:
 	UFUNCTION()
 	void OnPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	UFUNCTION()
-	void OnPlayerKilled();
+	void OnInteract();
 
 public:
 	// Called every frame

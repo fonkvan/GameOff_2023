@@ -40,7 +40,7 @@ public:
 	void ChangeLanes(const FInputActionValue& Value);
 	void AutoMoveForward(float DeltaTime);
 	bool ValidLaneChange(int direction) const;
-	void Interact(const FInputActionValue& Value);
+	void Interact();
 
 	void SlowTime();
 
@@ -57,7 +57,7 @@ protected:
 	UInputAction* Input_Jump;
 	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* Input_Interact;
-    UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* Input_SlowTime;
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USpringArmComponent* SpringArmComp;

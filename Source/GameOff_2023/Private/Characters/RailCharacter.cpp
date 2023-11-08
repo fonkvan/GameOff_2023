@@ -61,7 +61,7 @@ void ARailCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(Input_Move, ETriggerEvent::Triggered, this, &ARailCharacter::ChangeLanes);
 		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-		EnhancedInputComponent->BindAction(Input_Interact, ETriggerEvent::Completed, this, &ARailCharacter::Interact);
+		EnhancedInputComponent->BindAction(Input_Interact, ETriggerEvent::Triggered, this, &ARailCharacter::Interact);
 		EnhancedInputComponent->BindAction(Input_SlowTime, ETriggerEvent::Triggered, this, &ARailCharacter::SlowTime);
 	}
 }
@@ -81,12 +81,9 @@ void ARailCharacter::ChangeLanes(const FInputActionValue& Value)
 		}
 	}
 }
-void ARailCharacter::Interact(const FInputActionValue& Value)
+void ARailCharacter::Interact()
 {
-	if (IsValid(Controller))
-	{
-		OnPlayerInteracted.Broadcast();
-	}
+	OnPlayerInteracted.Broadcast();
 }
 // If we use splines, it will be relatively easy to add to this function
 void ARailCharacter::AutoMoveForward(float DeltaTime)
