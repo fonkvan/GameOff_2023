@@ -43,6 +43,7 @@ public:
 	void Interact();
 
 	void SlowTime();
+	void ResetTimeDilation();
 
 protected:
 	UPROPERTY(VisibleAnywhere)

@@ -35,11 +35,6 @@ void UTimeAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 void UTimeAbilityComponent::ActivateAbility()
 {
-	if(bAbilityActive)
-	{
-		DeactivateAbility();
-		return;
-	}
 	if(!GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_MeterUpdate))
 	{
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle_MeterUpdate, this, &UTimeAbilityComponent::UpdateMeter, MeterUseRate, true);
