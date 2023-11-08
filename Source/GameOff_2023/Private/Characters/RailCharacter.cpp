@@ -62,7 +62,8 @@ void ARailCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		EnhancedInputComponent->BindAction(Input_Interact, ETriggerEvent::Triggered, this, &ARailCharacter::Interact);
-		EnhancedInputComponent->BindAction(Input_SlowTime, ETriggerEvent::Triggered, this, &ARailCharacter::SlowTime);
+		EnhancedInputComponent->BindAction(Input_SlowTime, ETriggerEvent::Started, this, &ARailCharacter::SlowTime);
+		EnhancedInputComponent->BindAction(Input_SlowTime, ETriggerEvent::Completed, this, &ARailCharacter::ResetTimeDilation);
 	}
 }
 
@@ -101,4 +102,9 @@ bool ARailCharacter::ValidLaneChange(int direction) const
 void ARailCharacter::SlowTime()
 {
 	TimeAbilityComponent->ActivateAbility();
+}
+
+void ARailCharacter::ResetTimeDilation()
+{
+	TimeAbilityComponent->DeactivateAbility();
 }
