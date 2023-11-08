@@ -9,7 +9,9 @@
 
 class UCameraComponent;
 class UInputAction;
+class UInputMappingContext;
 class USpringArmComponent;
+class UTimeAbilityComponent;
 UCLASS()
 class GAMEOFF_2023_API ARailCharacter : public ACharacter
 {
@@ -34,19 +36,25 @@ public:
 	void AutoMoveForward(float DeltaTime);
 	bool ValidLaneChange(int direction) const;
 
+	void SlowTime();
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	int CurrentLane;
 	UPROPERTY(EditDefaultsOnly, Category = "Rail Movement", meta = (AllowPrivateAccess = "true"))
 	float LaneWidth;
 	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = "true"))
-	class UInputMappingContext* DefaultMappingContext;
+	UInputMappingContext* DefaultMappingContext;
 	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* Input_Move;
 	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* Input_Jump;
+	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction* Input_SlowTime;
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UCameraComponent* CameraComp;
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UTimeAbilityComponent* TimeAbilityComponent;
 };
