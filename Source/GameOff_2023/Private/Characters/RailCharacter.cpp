@@ -4,6 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "ActorComponents/TimeAbilityComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -25,6 +26,8 @@ ARailCharacter::ARailCharacter()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
 	CameraComp->bUsePawnControlRotation = false;
 	CameraComp->SetupAttachment(SpringArmComp);
+
+	TimeAbilityComponent = CreateDefaultSubobject<UTimeAbilityComponent>(TEXT("Time Ability Component"));
 }
 
 // Called when the game starts or when spawned
@@ -59,6 +62,7 @@ void ARailCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		EnhancedInputComponent->BindAction(Input_Interact, ETriggerEvent::Completed, this, &ARailCharacter::Interact);
+		EnhancedInputComponent->BindAction(Input_SlowTime, ETriggerEvent::Triggered, this, &ARailCharacter::SlowTime);
 	}
 }
 
@@ -95,4 +99,9 @@ bool ARailCharacter::ValidLaneChange(int direction) const
 {
 	int DesiredLane = CurrentLane + direction;
 	return UKismetMathLibrary::Abs(DesiredLane) < 2;
+}
+
+void ARailCharacter::SlowTime()
+{
+	TimeAbilityComponent->ActivateAbility();
 }
