@@ -3,21 +3,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "ObstacleBase.generated.h"
+#include "ObstacleBase.h"
+#include "Obstacle.generated.h"
 
-UCLASS()
-class GAMEOFF_2023_API AObstacleBase : public AActor
+class UStaticMeshComponent;
+
+UCLASS(Blueprintable)
+class GAMEOFF_2023_API AObstacle : public AObstacleBase
 {
 	GENERATED_BODY()
-
 public:
 	// Sets default values for this actor's properties
-	AObstacleBase();
+	AObstacle();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UStaticMeshComponent* Mesh;
 
 public:
 	// Called every frame

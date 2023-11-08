@@ -13,7 +13,7 @@
 ARailCharacter::ARailCharacter()
 	: CurrentLane(0), LaneWidth(200.f)
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -31,14 +31,13 @@ ARailCharacter::ARailCharacter()
 void ARailCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void ARailCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	AutoMoveForward(DeltaTime); //since we are always moving forward, it makes most sense to put in Tick 
+	AutoMoveForward(DeltaTime); // since we are always moving forward, it makes most sense to put in Tick
 }
 
 // Called to bind functionality to input
@@ -46,7 +45,7 @@ void ARailCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	const APlayerController* PC = Cast<APlayerController>(Controller);
-	const ULocalPlayer* LP = PC->GetLocalPlayer();
+	const ULocalPlayer*		 LP = PC->GetLocalPlayer();
 
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	check(Subsystem);
@@ -54,22 +53,23 @@ void ARailCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Subsystem->ClearAllMappings();
 	Subsystem->AddMappingContext(DefaultMappingContext, 0);
 
-	if(UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(Input_Move, ETriggerEvent::Triggered, this, &ARailCharacter::ChangeLanes);
 		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(Input_Interact, ETriggerEvent::Completed, this, &ARailCharacter::Interact);
 	}
 }
 
-//may be more difficult to change this one with splines but it is do-able
+// may be more difficult to change this one with splines but it is do-able
 void ARailCharacter::ChangeLanes(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
-	if(IsValid(Controller))
+	if (IsValid(Controller))
 	{
 		int LaneDirection = UKismetMathLibrary::SignOfFloat(MovementVector.X);
-		if(ValidLaneChange(LaneDirection))
+		if (ValidLaneChange(LaneDirection))
 		{
 			CurrentLane += LaneDirection;
 			FVector NewLocation = GetActorLocation() + (GetActorRightVector() * LaneWidth * LaneDirection);
@@ -77,8 +77,14 @@ void ARailCharacter::ChangeLanes(const FInputActionValue& Value)
 		}
 	}
 }
-
-//If we use splines, it will be relatively easy to add to this function
+void ARailCharacter::Interact(const FInputActionValue& Value)
+{
+	if (IsValid(Controller))
+	{
+		OnPlayerInteracted.Broadcast();
+	}
+}
+// If we use splines, it will be relatively easy to add to this function
 void ARailCharacter::AutoMoveForward(float DeltaTime)
 {
 	const float Amt = GetMovementComponent()->GetMaxSpeed() * DeltaTime;

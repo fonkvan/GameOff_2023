@@ -7,6 +7,8 @@
 #include "InputActionValue.h"
 #include "RailCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerInteractedSignature);
+
 class UCameraComponent;
 class UInputAction;
 class USpringArmComponent;
@@ -18,6 +20,9 @@ class GAMEOFF_2023_API ARailCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ARailCharacter();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerInteractedSignature OnPlayerInteracted;
 
 protected:
 	// Called when the game starts or when spawned
@@ -33,6 +38,7 @@ public:
 	void ChangeLanes(const FInputActionValue& Value);
 	void AutoMoveForward(float DeltaTime);
 	bool ValidLaneChange(int direction) const;
+	void Interact(const FInputActionValue& Value);
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -45,6 +51,8 @@ protected:
 	UInputAction* Input_Move;
 	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* Input_Jump;
+	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction* Input_Interact;
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere, Category = "Components")
