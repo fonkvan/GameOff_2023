@@ -9,6 +9,7 @@ AObstacle::AObstacle()
 	PrimaryActorTick.bCanEverTick = false;
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(RootComponent);
+	Mesh->SetCollisionProfileName("BlockAll");
 	Mesh->OnComponentHit.AddDynamic(this, &AObstacle::OnPlayerCollide);
 }
 
