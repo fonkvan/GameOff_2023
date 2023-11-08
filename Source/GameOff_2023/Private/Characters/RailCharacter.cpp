@@ -12,7 +12,13 @@
 
 // Sets default values
 ARailCharacter::ARailCharacter()
-	: CurrentLane(0), LaneWidth(200.f)
+	: bChangingLanes(false),
+		CurrentLane(0),
+		MovementSpeed(600.f),
+		LaneWidth(200.f),
+		LaneChangeSpeed(600.f),
+		DesiredLocation(FVector::Zero()),
+		LaneChangeErrorTolerance(10)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -34,6 +40,8 @@ ARailCharacter::ARailCharacter()
 void ARailCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	GetCharacterMovement()->MaxWalkSpeed = MovementSpeed;
+	LastX = GetActorLocation().X;
 }
 
 // Called every frame
@@ -41,6 +49,28 @@ void ARailCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	AutoMoveForward(DeltaTime); // since we are always moving forward, it makes most sense to put in Tick
+	if(LastX < GetActorLocation().X)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Actor Pulled backwards"));
+	}
+	LastX = GetActorLocation().X;
+	if(bChangingLanes)
+	{
+		FVector NewLocation = UKismetMathLibrary::VInterpTo_Constant(GetActorLocation(), DesiredLocation, DeltaTime, LaneChangeSpeed);
+		SetActorLocation(NewLocation, false);
+		FVector Right = GetActorRightVector();
+		float RightDotCurrentLocation = Right.Dot(GetActorLocation());
+		float RightDotDesiredLocation = Right.Dot(DesiredLocation);
+		if(FMath::IsNearlyEqual(RightDotCurrentLocation, RightDotDesiredLocation, LaneChangeErrorTolerance))
+		{
+			FVector Fwd = GetActorForwardVector();
+			FVector FinalLocation = Fwd * Fwd.Dot(GetActorLocation()) + Right * Right.Dot(DesiredLocation);
+			FinalLocation.Z = GetActorLocation().Z;
+			SetActorLocation(FinalLocation, false);
+			bChangingLanes = false;
+			DesiredLocation = FVector::Zero();
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -70,27 +100,35 @@ void ARailCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 // may be more difficult to change this one with splines but it is do-able
 void ARailCharacter::ChangeLanes(const FInputActionValue& Value)
 {
-	FVector2D MovementVector = Value.Get<FVector2D>();
-	if (IsValid(Controller))
+	if(bChangingLanes)
 	{
-		int LaneDirection = UKismetMathLibrary::SignOfFloat(MovementVector.X);
-		if (ValidLaneChange(LaneDirection))
-		{
-			CurrentLane += LaneDirection;
-			FVector NewLocation = GetActorLocation() + (GetActorRightVector() * LaneWidth * LaneDirection);
-			SetActorLocation(NewLocation, false);
-		}
+		return;
+	}
+	
+	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	int LaneDirection = UKismetMathLibrary::SignOfFloat(MovementVector.X);
+	if (ValidLaneChange(LaneDirection))
+	{
+		bChangingLanes = true;
+		CurrentLane += LaneDirection;
+		float EstTimeToChangeLanes = LaneWidth / LaneChangeSpeed;
+		float EstForwardDist = MovementSpeed * EstTimeToChangeLanes;
+		DesiredLocation = GetActorLocation() + (GetActorRightVector() * LaneWidth * LaneDirection) + (GetActorForwardVector() * EstForwardDist);
+		//SetActorLocation(NewLocation, false);
 	}
 }
+
 void ARailCharacter::Interact()
 {
 	OnPlayerInteracted.Broadcast();
 }
+
 // If we use splines, it will be relatively easy to add to this function
 void ARailCharacter::AutoMoveForward(float DeltaTime)
 {
 	const float Amt = GetMovementComponent()->GetMaxSpeed() * DeltaTime;
-	AddMovementInput(GetActorForwardVector(), Amt);
+	AddMovementInput(GetActorForwardVector(), Amt);	
 }
 
 bool ARailCharacter::ValidLaneChange(int direction) const

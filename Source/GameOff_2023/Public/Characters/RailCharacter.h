@@ -46,10 +46,21 @@ public:
 	void ResetTimeDilation();
 
 protected:
-	UPROPERTY(VisibleAnywhere)
+	float LastX;
+	UPROPERTY(VisibleAnywhere, Category = "Rail Movement")
+	bool bChangingLanes;
+	UPROPERTY(VisibleAnywhere, Category = "Rail Movement")
 	int CurrentLane;
 	UPROPERTY(EditDefaultsOnly, Category = "Rail Movement", meta = (AllowPrivateAccess = "true"))
+	float MovementSpeed;
+	UPROPERTY(EditDefaultsOnly, Category = "Rail Movement", meta = (AllowPrivateAccess = "true"))
 	float LaneWidth;
+	UPROPERTY(EditDefaultsOnly, Category = "Rail Movement", meta = (AllowPrivateAccess = "true"))
+	float LaneChangeSpeed;
+	UPROPERTY(VisibleAnywhere, Category = "Rail Movement")
+	FVector DesiredLocation;
+	UPROPERTY(EditDefaultsOnly, Category = "Rail Movement")
+	float LaneChangeErrorTolerance;
 	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
 	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
