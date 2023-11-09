@@ -41,7 +41,6 @@ void ARailCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = MovementSpeed;
-	LastX = GetActorLocation().X;
 }
 
 // Called every frame
@@ -49,11 +48,6 @@ void ARailCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	AutoMoveForward(DeltaTime); // since we are always moving forward, it makes most sense to put in Tick
-	if(LastX < GetActorLocation().X)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Actor Pulled backwards"));
-	}
-	LastX = GetActorLocation().X;
 	if(bChangingLanes)
 	{
 		FVector NewLocation = UKismetMathLibrary::VInterpTo_Constant(GetActorLocation(), DesiredLocation, DeltaTime, LaneChangeSpeed);

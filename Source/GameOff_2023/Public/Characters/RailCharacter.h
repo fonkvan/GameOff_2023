@@ -46,7 +46,6 @@ public:
 	void ResetTimeDilation();
 
 protected:
-	float LastX;
 	UPROPERTY(VisibleAnywhere, Category = "Rail Movement")
 	bool bChangingLanes;
 	UPROPERTY(VisibleAnywhere, Category = "Rail Movement")
