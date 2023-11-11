@@ -4,11 +4,6 @@
 #include "Components/ProgressBar.h"
 #include "Components/CanvasPanel.h"
 
-void UAbilityMeterWidget::NativeConstruct()
-{
-	Super::NativeConstruct();
-}
-
 void UAbilityMeterWidget::OnMeterAmountChanged(float MaxAmount, float CurrentAmount)
 {
 	AbilityBar->SetPercent(CurrentAmount / MaxAmount);

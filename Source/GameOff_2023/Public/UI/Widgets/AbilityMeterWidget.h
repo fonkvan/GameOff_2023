@@ -18,11 +18,6 @@ public:
 	void OnMeterAmountChanged(float MaxMeterAmount, float CurrentMeterAmount);
 
 protected:
-	virtual void NativeConstruct() override;
-
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	class UCanvasPanel* Canvas;
-
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UProgressBar* AbilityBar;
 };

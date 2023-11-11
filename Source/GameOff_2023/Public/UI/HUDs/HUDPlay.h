@@ -17,6 +17,15 @@ class GAMEOFF_2023_API AHUDPlay : public AHUD
 
 	UFUNCTION()
 	void ShowAbilityMeter();
+	UFUNCTION()
+	void HideAbilityMeter();
+
+	UFUNCTION()
+	void ShowPauseMenu();
+	UFUNCTION()
+	void HidePauseMenu();
+	UFUNCTION()
+	void ToggleMenu();
 
 protected:
 	// Called when the game starts
@@ -25,7 +34,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UUserWidget> AbilityMeterClass;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> PauseMenuClass;
 	// Keep a pointer to be able to hide it
 	UPROPERTY()
 	UUserWidget* AbilityMeter;
+	// Keep a pointer to be able to hide it
+	UPROPERTY()
+	UUserWidget* PauseMenu;
 };

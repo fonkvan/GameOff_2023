@@ -81,6 +81,7 @@ void ARailCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(Input_Interact, ETriggerEvent::Triggered, this, &ARailCharacter::Interact);
 		EnhancedInputComponent->BindAction(Input_SlowTime, ETriggerEvent::Started, this, &ARailCharacter::SlowTime);
 		EnhancedInputComponent->BindAction(Input_SlowTime, ETriggerEvent::Completed, this, &ARailCharacter::ResetTimeDilation);
+		EnhancedInputComponent->BindAction(Input_TogglePause, ETriggerEvent::Triggered, this, &ARailCharacter::TogglePauseMenu);
 	}
 }
 
@@ -137,4 +138,9 @@ void ARailCharacter::ResetTimeDilation()
 UTimeAbilityComponent* ARailCharacter::GetTimeAbilityComponent() const
 {
 	return TimeAbilityComponent;
+}
+
+void ARailCharacter::TogglePauseMenu()
+{
+	OnPlayerToggledPauseMenu.Broadcast();
 }
