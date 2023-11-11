@@ -5,24 +5,24 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Characters/RailCharacter.h"
-#include "AbilityMeter.generated.h"
+#include "AbilityMeterWidget.generated.h"
 
 /**
  *
  */
 UCLASS()
-class GAMEOFF_2023_API UAbilityMeter : public UUserWidget
+class GAMEOFF_2023_API UAbilityMeterWidget : public UUserWidget
 {
 	GENERATED_BODY()
+public:
+	void OnMeterAmountChanged(float MaxMeterAmount, float CurrentMeterAmount);
+
 protected:
 	virtual void NativeConstruct() override;
-
-	TWeakObjectPtr<ARailCharacter> OwnerCharacter;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UCanvasPanel* Canvas;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UProgressBar* AbilityBar;
-
 };

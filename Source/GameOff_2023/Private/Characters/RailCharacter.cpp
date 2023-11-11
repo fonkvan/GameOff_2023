@@ -12,13 +12,7 @@
 
 // Sets default values
 ARailCharacter::ARailCharacter()
-	: bChangingLanes(false),
-		CurrentLane(0),
-		MovementSpeed(600.f),
-		LaneWidth(200.f),
-		LaneChangeSpeed(600.f),
-		DesiredLocation(FVector::Zero()),
-		LaneChangeErrorTolerance(10)
+	: bChangingLanes(false), CurrentLane(0), MovementSpeed(600.f), LaneWidth(200.f), LaneChangeSpeed(600.f), DesiredLocation(FVector::Zero()), LaneChangeErrorTolerance(10)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -48,14 +42,14 @@ void ARailCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	AutoMoveForward(DeltaTime); // since we are always moving forward, it makes most sense to put in Tick
-	if(bChangingLanes)
+	if (bChangingLanes)
 	{
 		FVector NewLocation = UKismetMathLibrary::VInterpTo_Constant(GetActorLocation(), DesiredLocation, DeltaTime, LaneChangeSpeed);
 		SetActorLocation(NewLocation, false);
 		FVector Right = GetActorRightVector();
-		float RightDotCurrentLocation = Right.Dot(GetActorLocation());
-		float RightDotDesiredLocation = Right.Dot(DesiredLocation);
-		if(FMath::IsNearlyEqual(RightDotCurrentLocation, RightDotDesiredLocation, LaneChangeErrorTolerance))
+		float	RightDotCurrentLocation = Right.Dot(GetActorLocation());
+		float	RightDotDesiredLocation = Right.Dot(DesiredLocation);
+		if (FMath::IsNearlyEqual(RightDotCurrentLocation, RightDotDesiredLocation, LaneChangeErrorTolerance))
 		{
 			FVector Fwd = GetActorForwardVector();
 			FVector FinalLocation = Fwd * Fwd.Dot(GetActorLocation()) + Right * Right.Dot(DesiredLocation);
@@ -71,9 +65,8 @@ void ARailCharacter::Tick(float DeltaTime)
 void ARailCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	const APlayerController* PC = Cast<APlayerController>(Controller);
-	const ULocalPlayer*		 LP = PC->GetLocalPlayer();
-
+	const APlayerController*			PC = Cast<APlayerController>(Controller);
+	const ULocalPlayer*					LP = PC->GetLocalPlayer();
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	check(Subsystem);
 
@@ -94,11 +87,11 @@ void ARailCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 // may be more difficult to change this one with splines but it is do-able
 void ARailCharacter::ChangeLanes(const FInputActionValue& Value)
 {
-	if(bChangingLanes)
+	if (bChangingLanes)
 	{
 		return;
 	}
-	
+
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
 	int LaneDirection = UKismetMathLibrary::SignOfFloat(MovementVector.X);
@@ -109,7 +102,7 @@ void ARailCharacter::ChangeLanes(const FInputActionValue& Value)
 		float EstTimeToChangeLanes = LaneWidth / LaneChangeSpeed;
 		float EstForwardDist = MovementSpeed * EstTimeToChangeLanes;
 		DesiredLocation = GetActorLocation() + (GetActorRightVector() * LaneWidth * LaneDirection) + (GetActorForwardVector() * EstForwardDist);
-		//SetActorLocation(NewLocation, false);
+		// SetActorLocation(NewLocation, false);
 	}
 }
 
@@ -122,7 +115,7 @@ void ARailCharacter::Interact()
 void ARailCharacter::AutoMoveForward(float DeltaTime)
 {
 	const float Amt = GetMovementComponent()->GetMaxSpeed() * DeltaTime;
-	AddMovementInput(GetActorForwardVector(), Amt);	
+	AddMovementInput(GetActorForwardVector(), Amt);
 }
 
 bool ARailCharacter::ValidLaneChange(int direction) const
@@ -139,4 +132,9 @@ void ARailCharacter::SlowTime()
 void ARailCharacter::ResetTimeDilation()
 {
 	TimeAbilityComponent->DeactivateAbility();
+}
+
+UTimeAbilityComponent* ARailCharacter::GetTimeAbilityComponent() const
+{
+	return TimeAbilityComponent;
 }

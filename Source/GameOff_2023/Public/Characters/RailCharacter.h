@@ -45,6 +45,8 @@ public:
 	void SlowTime();
 	void ResetTimeDilation();
 
+	UTimeAbilityComponent* GetTimeAbilityComponent() const;
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Rail Movement")
 	bool bChangingLanes;
