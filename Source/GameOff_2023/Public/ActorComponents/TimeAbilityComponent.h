@@ -6,21 +6,24 @@
 #include "Components/ActorComponent.h"
 #include "TimeAbilityComponent.generated.h"
 
+DECLARE_DELEGATE_TwoParams(FOnMeterAmountChangedSignature, float, /* MaxMeterAmount */ float /* CurrentMeterAmount*/)
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+	UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class GAMEOFF_2023_API UTimeAbilityComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UTimeAbilityComponent();
+
+	FOnMeterAmountChangedSignature OnMeterAmountChanged;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -29,22 +32,22 @@ public:
 	void UpdateMeter();
 
 private:
-	//should be a value from 0.0 - 1.0 (1.0 is normal)
+	// should be a value from 0.0 - 1.0 (1.0 is normal)
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Modifiers", meta = (AllowPrivateAccess = "true"))
 	float SlowAmount;
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Modifiers", meta = (AllowPrivateAccess = "true"))
 	float MaxMeterAmount;
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Modifiers", meta = (AllowPrivateAccess = "true"))
 	float CurrentMeterAmount;
-	//How often the meter is updated
+	// How often the meter is updated
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Modifiers", meta = (AllowPrivateAccess = "true"))
 	float MeterUseRate;
-	//How much is used per iteration
+	// How much is used per iteration
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Modifiers", meta = (AllowPrivateAccess = "true"))
 	float UseAmount;
-	//How much is refilled per iteration
+	// How much is refilled per iteration
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Modifiers", meta = (AllowPrivateAccess = "true"))
-	float RefillAmount;
-	bool bAbilityActive;
+	float		 RefillAmount;
+	bool		 bAbilityActive;
 	FTimerHandle TimerHandle_MeterUpdate;
 };

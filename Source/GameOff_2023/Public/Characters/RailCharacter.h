@@ -8,6 +8,7 @@
 #include "RailCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerInteractedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerToggledPauseMenuSignature);
 
 class UCameraComponent;
 class UInputAction;
@@ -25,6 +26,8 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerInteractedSignature OnPlayerInteracted;
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerToggledPauseMenuSignature OnPlayerToggledPauseMenu;
 
 protected:
 	// Called when the game starts or when spawned
@@ -44,6 +47,10 @@ public:
 
 	void SlowTime();
 	void ResetTimeDilation();
+
+	// UI stuff
+	UTimeAbilityComponent* GetTimeAbilityComponent() const;
+	void				   TogglePauseMenu();
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Rail Movement")
@@ -70,6 +77,8 @@ protected:
 	UInputAction* Input_Interact;
 	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* Input_SlowTime;
+	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction* Input_TogglePause;
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere, Category = "Components")
