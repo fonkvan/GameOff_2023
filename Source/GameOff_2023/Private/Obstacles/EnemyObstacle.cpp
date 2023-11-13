@@ -14,7 +14,6 @@ AEnemyObstacle::AEnemyObstacle()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(RootComponent);
 	Mesh->SetCollisionProfileName("BlockAll");
-	Mesh->OnComponentHit.AddDynamic(this, &AEnemyObstacle::OnPlayerCollide);
 
 	InteractArea = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractArea"));
 	InteractArea->SetupAttachment(Mesh);

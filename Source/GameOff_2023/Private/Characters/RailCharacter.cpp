@@ -2,17 +2,18 @@
 
 #include "Characters/RailCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "ActorComponents/TimeAbilityComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Obstacles/ObstacleBase.h"
 
 // Sets default values
 ARailCharacter::ARailCharacter()
-	: bChangingLanes(false), CurrentLane(0), MovementSpeed(600.f), LaneWidth(200.f), LaneChangeSpeed(600.f), DesiredLocation(FVector::Zero()), LaneChangeErrorTolerance(10)
+	: bChangingLanes(false), CurrentLane(0), MovementSpeed(600.f), LaneWidth(200.f), LaneChangeSpeed(600.f), DesiredLocation(FVector::Zero()), LaneChangeErrorTolerance(10), RestartLevelDelay(2.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -29,6 +30,13 @@ ARailCharacter::ARailCharacter()
 
 	TimeAbilityComponent = CreateDefaultSubobject<UTimeAbilityComponent>(TEXT("Time Ability Component"));
 }
+
+void ARailCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ARailCharacter::OnPlayerHit);
+}
+
 
 // Called when the game starts or when spawned
 void ARailCharacter::BeginPlay()
@@ -149,4 +157,16 @@ UTimeAbilityComponent* ARailCharacter::GetTimeAbilityComponent() const
 void ARailCharacter::TogglePauseMenu()
 {
 	OnPlayerToggledPauseMenu.Broadcast();
+}
+
+void ARailCharacter::OnPlayerHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor->IsA(AObstacleBase::StaticClass()))
+	{
+		DisableInput(Cast<APlayerController>(Controller));
+		SetActorTickEnabled(false);
+		GetMesh()->SetSimulatePhysics(true);
+		TimeAbilityComponent->DeactivateAbility();
+		GetWorldTimerManager().SetTimer(TimerHandle_RestartLevel, Cast<APlayerController>(Controller), &APlayerController::RestartLevel, RestartLevelDelay, false);
+	}
 }
