@@ -91,5 +91,5 @@ protected:
 	UCameraComponent* CameraComp;
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UTimeAbilityComponent* TimeAbilityComponent;
-	FTimerHandle TimerHandle_RestartLevel;
+	FTimerHandle		   TimerHandle_RestartLevel;
 };

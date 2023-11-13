@@ -37,7 +37,6 @@ void ARailCharacter::PostInitializeComponents()
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ARailCharacter::OnPlayerHit);
 }
 
-
 // Called when the game starts or when spawned
 void ARailCharacter::BeginPlay()
 {
