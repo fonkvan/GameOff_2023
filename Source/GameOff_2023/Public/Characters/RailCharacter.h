@@ -30,6 +30,7 @@ public:
 	FOnPlayerToggledPauseMenuSignature OnPlayerToggledPauseMenu;
 
 protected:
+	virtual void PostInitializeComponents() override;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -47,6 +48,9 @@ public:
 
 	void SlowTime();
 	void ResetTimeDilation();
+
+	UFUNCTION()
+	void OnPlayerHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	// UI stuff
 	UTimeAbilityComponent* GetTimeAbilityComponent() const;
@@ -67,6 +71,8 @@ protected:
 	FVector DesiredLocation;
 	UPROPERTY(EditDefaultsOnly, Category = "Rail Movement")
 	float LaneChangeErrorTolerance;
+	UPROPERTY(EditDefaultsOnly, Category = "Level Management")
+	float RestartLevelDelay;
 	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
 	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
@@ -85,4 +91,5 @@ protected:
 	UCameraComponent* CameraComp;
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UTimeAbilityComponent* TimeAbilityComponent;
+	FTimerHandle		   TimerHandle_RestartLevel;
 };

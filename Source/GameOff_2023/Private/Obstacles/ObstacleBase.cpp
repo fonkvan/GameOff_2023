@@ -16,11 +16,6 @@ void AObstacleBase::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AObstacleBase::OnPlayerCollide(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	OtherActor->Destroy();
-}
-
 // Called every frame
 void AObstacleBase::Tick(float DeltaTime)
 {

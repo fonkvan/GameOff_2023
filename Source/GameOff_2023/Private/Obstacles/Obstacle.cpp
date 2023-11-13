@@ -10,7 +10,6 @@ AObstacle::AObstacle()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(RootComponent);
 	Mesh->SetCollisionProfileName("BlockAll");
-	Mesh->OnComponentHit.AddDynamic(this, &AObstacle::OnPlayerCollide);
 }
 
 // Called when the game starts or when spawned
