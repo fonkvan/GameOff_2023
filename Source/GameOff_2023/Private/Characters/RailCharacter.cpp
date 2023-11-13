@@ -121,6 +121,12 @@ void ARailCharacter::AutoMoveForward(float DeltaTime)
 
 bool ARailCharacter::ValidLaneChange(int direction) const
 {
+	// if jumping, will work as long as there's no double jump.
+	if (!CanJump())
+	{
+		return false;
+	}
+
 	int DesiredLane = CurrentLane + direction;
 	return UKismetMathLibrary::Abs(DesiredLane) < 2;
 }
