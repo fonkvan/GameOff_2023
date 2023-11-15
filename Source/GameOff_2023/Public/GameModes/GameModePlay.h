@@ -7,11 +7,10 @@
 #include "GameModePlay.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class GAMEOFF_2023_API AGameModePlay : public AGameModeBase
 {
 	GENERATED_BODY()
-	
 };
