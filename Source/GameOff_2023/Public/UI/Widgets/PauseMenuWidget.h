@@ -17,6 +17,8 @@ class GAMEOFF_2023_API UPauseMenuWidget : public UUserWidget
 public:
 	FOnResumedSignature OnResumed;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Level To Exit")
+	FName LevelToExit;
 	UFUNCTION()
 	void OnExitClicked();
 	UFUNCTION()

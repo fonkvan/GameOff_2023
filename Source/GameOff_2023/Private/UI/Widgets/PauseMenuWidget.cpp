@@ -2,6 +2,7 @@
 
 #include "UI/Widgets/PauseMenuWidget.h"
 #include "Components/Button.h"
+#include "Kismet/GameplayStatics.h"
 
 void UPauseMenuWidget::NativeConstruct()
 {
@@ -17,6 +18,7 @@ void UPauseMenuWidget::NativeConstruct()
 
 void UPauseMenuWidget::OnExitClicked()
 {
+	UGameplayStatics::OpenLevel(this, LevelToExit, true);
 }
 
 void UPauseMenuWidget::OnResumeClicked()

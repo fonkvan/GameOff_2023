@@ -14,7 +14,7 @@ class GAMEOFF_2023_API AGameModeMainMenu : public AGameModeBase
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Level load on \"Play\" clicked (do copy ref on map)")
+	UPROPERTY(EditDefaultsOnly, Category = "Level load on \"Play\" clicked")
 	FName LevelToLoad;
 
 	UFUNCTION()
