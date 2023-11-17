@@ -46,6 +46,14 @@ public:
 	bool ValidLaneChange(int direction) const;
 	void Interact();
 
+	virtual void Jump() override;
+
+	FORCEINLINE bool CanSlide() const { return !bIsSliding && !bChangingLanes && CanJump(); };
+	void			 Slide();
+	void			 SlideStop();
+	UFUNCTION(BlueprintImplementableEvent)
+	void SlideAnimNotify();
+
 	void SlowTime();
 	void ResetTimeDilation();
 
@@ -53,32 +61,42 @@ public:
 	void OnPlayerHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	// UI stuff
-	UTimeAbilityComponent* GetTimeAbilityComponent() const;
-	void				   TogglePauseMenu();
+	FORCEINLINE UTimeAbilityComponent* GetTimeAbilityComponent() const { return TimeAbilityComponent; };
+	void							   TogglePauseMenu();
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Rail Movement")
 	bool bChangingLanes;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rail Movement", meta = (AllowPrivateAccess = "true"))
+	bool bIsSliding;
 	UPROPERTY(VisibleAnywhere, Category = "Rail Movement")
 	int CurrentLane;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Capsule Settings")
+	float DefaultCapsuleSize;
+	UPROPERTY(EditDefaultsOnly, Category = "Capsule Settings")
+	float SlideCapsuleSize;
 	UPROPERTY(EditDefaultsOnly, Category = "Rail Movement", meta = (AllowPrivateAccess = "true"))
 	float MovementSpeed;
+	UPROPERTY(EditDefaultsOnly, Category = "Rail Movement", meta = (AllowPrivateAccess = "true"))
+	float SlideTime;
 	UPROPERTY(EditDefaultsOnly, Category = "Rail Movement", meta = (AllowPrivateAccess = "true"))
 	float LaneWidth;
 	UPROPERTY(EditDefaultsOnly, Category = "Rail Movement", meta = (AllowPrivateAccess = "true"))
 	float LaneChangeSpeed;
-	UPROPERTY(VisibleAnywhere, Category = "Rail Movement")
-	FVector DesiredLocation;
 	UPROPERTY(EditDefaultsOnly, Category = "Rail Movement")
 	float LaneChangeErrorTolerance;
 	UPROPERTY(EditDefaultsOnly, Category = "Level Management")
 	float RestartLevelDelay;
+	UPROPERTY(VisibleAnywhere, Category = "Rail Movement")
+	FVector DesiredLocation;
 	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
 	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* Input_Move;
 	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* Input_Jump;
+	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction* Input_Slide;
 	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* Input_Interact;
 	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
@@ -92,4 +110,5 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UTimeAbilityComponent* TimeAbilityComponent;
 	FTimerHandle		   TimerHandle_RestartLevel;
+	FTimerHandle		   TimerHandle_SlideStop;
 };
