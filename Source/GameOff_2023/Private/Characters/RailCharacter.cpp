@@ -13,7 +13,18 @@
 
 // Sets default values
 ARailCharacter::ARailCharacter()
-	: bChangingLanes(false), CurrentLane(0), MovementSpeed(600.f), LaneWidth(200.f), LaneChangeSpeed(600.f), DesiredLocation(FVector::Zero()), LaneChangeErrorTolerance(10), RestartLevelDelay(2.f)
+	: bChangingLanes(false)
+	, bIsSliding(false)
+	, CurrentLane(0)
+	, DefaultCapsuleSize(88.f)
+	, SlideCapsuleSize(44.f)
+	, MovementSpeed(600.f)
+	, SlideTime(1.5f)
+	, LaneWidth(200.f)
+	, LaneChangeSpeed(600.f)
+	, LaneChangeErrorTolerance(10)
+	, RestartLevelDelay(2.f)
+	, DesiredLocation(FVector::Zero())
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -42,13 +53,16 @@ void ARailCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = MovementSpeed;
+	GetCapsuleComponent()->SetVisibility(true);
 }
 
 // Called every frame
 void ARailCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	AutoMoveForward(DeltaTime); // since we are always moving forward, it makes most sense to put in Tick
+
 	if (bChangingLanes)
 	{
 		FVector NewLocation = UKismetMathLibrary::VInterpTo_Constant(GetActorLocation(), DesiredLocation, DeltaTime, LaneChangeSpeed);
@@ -83,11 +97,12 @@ void ARailCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(Input_Move, ETriggerEvent::Triggered, this, &ARailCharacter::ChangeLanes);
-		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Started, this, &ARailCharacter::Jump);
 		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(Input_Slide, ETriggerEvent::Triggered, this, &ARailCharacter::Slide);
 		EnhancedInputComponent->BindAction(Input_Interact, ETriggerEvent::Triggered, this, &ARailCharacter::Interact);
 		EnhancedInputComponent->BindAction(Input_SlowTime, ETriggerEvent::Started, this, &ARailCharacter::SlowTime);
-		EnhancedInputComponent->BindAction(Input_SlowTime, ETriggerEvent::Completed, this, &ARailCharacter::ResetTimeDilation);
+		EnhancedInputComponent->BindAction(Input_SlowTime, ETriggerEvent::Canceled, this, &ARailCharacter::ResetTimeDilation);
 		EnhancedInputComponent->BindAction(Input_TogglePause, ETriggerEvent::Triggered, this, &ARailCharacter::TogglePauseMenu);
 	}
 }
@@ -110,13 +125,7 @@ void ARailCharacter::ChangeLanes(const FInputActionValue& Value)
 		float EstTimeToChangeLanes = LaneWidth / LaneChangeSpeed;
 		float EstForwardDist = MovementSpeed * EstTimeToChangeLanes;
 		DesiredLocation = GetActorLocation() + (GetActorRightVector() * LaneWidth * LaneDirection) + (GetActorForwardVector() * EstForwardDist);
-		// SetActorLocation(NewLocation, false);
 	}
-}
-
-void ARailCharacter::Interact()
-{
-	OnPlayerInteracted.Broadcast();
 }
 
 // If we use splines, it will be relatively easy to add to this function
@@ -138,24 +147,47 @@ bool ARailCharacter::ValidLaneChange(int direction) const
 	return UKismetMathLibrary::Abs(DesiredLane) < 2;
 }
 
+void ARailCharacter::Interact()
+{
+	OnPlayerInteracted.Broadcast();
+}
+
+void ARailCharacter::Jump()
+{
+	if (bIsSliding || bChangingLanes)
+	{
+		return;
+	}
+	Super::Jump();
+}
+
+void ARailCharacter::Slide()
+{
+	if (CanSlide())
+	{
+		bIsSliding = true;
+		GetCapsuleComponent()->SetCapsuleHalfHeight(SlideCapsuleSize);
+		SlideAnimNotify();
+	}
+	GetWorldTimerManager().SetTimer(TimerHandle_SlideStop, this, &ARailCharacter::SlideStop, SlideTime, false);
+}
+
+void ARailCharacter::SlideStop()
+{
+	bIsSliding = false;
+	GetCapsuleComponent()->SetCapsuleHalfHeight(DefaultCapsuleSize);
+	SlideAnimNotify();
+}
+
 void ARailCharacter::SlowTime()
 {
+	UE_LOG(LogTemp, Error, TEXT("Slow triggered"));
 	TimeAbilityComponent->ActivateAbility();
 }
 
 void ARailCharacter::ResetTimeDilation()
 {
 	TimeAbilityComponent->DeactivateAbility();
-}
-
-UTimeAbilityComponent* ARailCharacter::GetTimeAbilityComponent() const
-{
-	return TimeAbilityComponent;
-}
-
-void ARailCharacter::TogglePauseMenu()
-{
-	OnPlayerToggledPauseMenu.Broadcast();
 }
 
 void ARailCharacter::OnPlayerHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -168,4 +200,9 @@ void ARailCharacter::OnPlayerHit(UPrimitiveComponent* HitComponent, AActor* Othe
 		TimeAbilityComponent->DeactivateAbility();
 		GetWorldTimerManager().SetTimer(TimerHandle_RestartLevel, Cast<APlayerController>(Controller), &APlayerController::RestartLevel, RestartLevelDelay, false);
 	}
+}
+
+void ARailCharacter::TogglePauseMenu()
+{
+	OnPlayerToggledPauseMenu.Broadcast();
 }
