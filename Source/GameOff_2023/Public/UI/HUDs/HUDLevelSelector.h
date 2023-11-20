@@ -24,6 +24,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetLevelToGo(FName LevelToGo) const;
+	UFUNCTION(BlueprintCallable)
+	void BlockPreviousButton();
+	UFUNCTION(BlueprintCallable)
+	void UnBlockPreviousButton();
+	UFUNCTION(BlueprintCallable)
+	void BlockNextButton();
+	UFUNCTION(BlueprintCallable)
+	void UnBlockNextButton();
 
 protected:
 	// Called when the game starts
