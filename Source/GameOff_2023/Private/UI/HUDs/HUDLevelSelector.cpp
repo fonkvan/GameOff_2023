@@ -7,6 +7,8 @@
 
 void AHUDLevelSelector::BeginPlay()
 {
+	APlayerController* PC = Cast<APlayerController>(GetOwner());
+	PC->SetShowMouseCursor(true);
 	ShowLevelSelector();
 }
 
@@ -38,5 +40,37 @@ void AHUDLevelSelector::SetLevelToGo(FName LevelToGo) const
 	{
 		LS->LevelText->SetText(FText::FromString(LevelToGo.ToString()));
 		LS->LevelToGo = LevelToGo;
+	}
+}
+
+void AHUDLevelSelector::BlockPreviousButton()
+{
+	if (ULevelSelectorWidget* LS = Cast<ULevelSelectorWidget>(LevelSelector))
+	{
+		LS->OnPreviousButtonPressed.Unbind();
+	}
+}
+
+void AHUDLevelSelector::UnBlockPreviousButton()
+{
+	if (ULevelSelectorWidget* LS = Cast<ULevelSelectorWidget>(LevelSelector))
+	{
+		LS->OnPreviousButtonPressed.BindUObject(this, &AHUDLevelSelector::GoPreviousLevel);
+	}
+}
+
+void AHUDLevelSelector::BlockNextButton()
+{
+	if (ULevelSelectorWidget* LS = Cast<ULevelSelectorWidget>(LevelSelector))
+	{
+		LS->OnNextButtonPressed.Unbind();
+	}
+}
+
+void AHUDLevelSelector::UnBlockNextButton()
+{
+	if (ULevelSelectorWidget* LS = Cast<ULevelSelectorWidget>(LevelSelector))
+	{
+		LS->OnNextButtonPressed.BindUObject(this, &AHUDLevelSelector::GoNextLevel);
 	}
 }
