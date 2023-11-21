@@ -48,6 +48,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UUserWidget> LevelSelectorclass;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	UUserWidget* LevelSelector;
 };

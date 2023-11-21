@@ -7,6 +7,8 @@
 
 void AHUDLevelSelector::BeginPlay()
 {
+	APlayerController* PC = Cast<APlayerController>(GetOwner());
+	PC->SetShowMouseCursor(true);
 	ShowLevelSelector();
 }
 
