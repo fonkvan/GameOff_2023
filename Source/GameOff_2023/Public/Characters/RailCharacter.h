@@ -59,6 +59,7 @@ public:
 
 	UFUNCTION()
 	void OnPlayerHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	void PlayerDeath();
 
 	// UI stuff
 	FORCEINLINE UTimeAbilityComponent* GetTimeAbilityComponent() const { return TimeAbilityComponent; };

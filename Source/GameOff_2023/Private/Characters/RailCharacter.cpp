@@ -9,7 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Obstacles/ObstacleBase.h"
+#include "Obstacles/BlockingObstacleBase.h"
 
 // Sets default values
 ARailCharacter::ARailCharacter()
@@ -137,8 +137,7 @@ void ARailCharacter::AutoMoveForward(float DeltaTime)
 
 bool ARailCharacter::ValidLaneChange(int direction) const
 {
-	// if jumping, will work as long as there's no double jump.
-	if (!CanJump())
+	if (!CanSlide())
 	{
 		return false;
 	}
@@ -192,15 +191,22 @@ void ARailCharacter::ResetTimeDilation()
 
 void ARailCharacter::OnPlayerHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor->IsA(AObstacleBase::StaticClass()))
+	if (OtherActor->IsA(ABlockingObstacleBase::StaticClass()))
 	{
-		DisableInput(Cast<APlayerController>(Controller));
-		SetActorTickEnabled(false);
-		GetMesh()->SetSimulatePhysics(true);
-		TimeAbilityComponent->DeactivateAbility();
-		GetWorldTimerManager().SetTimer(TimerHandle_RestartLevel, Cast<APlayerController>(Controller), &APlayerController::RestartLevel, RestartLevelDelay, false);
+		PlayerDeath();
 	}
 }
+
+void ARailCharacter::PlayerDeath()
+{
+	DisableInput(Cast<APlayerController>(Controller));
+	SetActorTickEnabled(false);
+	TimeAbilityComponent->DeactivateAbility();
+	SlideStop();
+	GetMesh()->SetSimulatePhysics(true);
+	GetWorldTimerManager().SetTimer(TimerHandle_RestartLevel, Cast<APlayerController>(Controller), &APlayerController::RestartLevel, RestartLevelDelay, false);
+}
+
 
 void ARailCharacter::TogglePauseMenu()
 {
