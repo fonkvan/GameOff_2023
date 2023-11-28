@@ -15,9 +15,3 @@ void AObstacleBase::BeginPlay()
 {
 	Super::BeginPlay();
 }
-
-// Called every frame
-void AObstacleBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}

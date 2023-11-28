@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ObstacleBase.h"
+#include "BlockingObstacleBase.h"
 #include "Obstacle.generated.h"
 
 class UStaticMeshComponent;
 
 UCLASS(Blueprintable)
-class GAMEOFF_2023_API AObstacle : public AObstacleBase
+class GAMEOFF_2023_API AObstacle : public ABlockingObstacleBase
 {
 	GENERATED_BODY()
 public:
