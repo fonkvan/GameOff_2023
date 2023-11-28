@@ -9,6 +9,10 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerInteractedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerToggledPauseMenuSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnJumpSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSlideSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSlideStopSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeathSignature);
 
 class UCameraComponent;
 class UInputAction;
@@ -28,6 +32,14 @@ public:
 	FOnPlayerInteractedSignature OnPlayerInteracted;
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerToggledPauseMenuSignature OnPlayerToggledPauseMenu;
+	UPROPERTY(BlueprintAssignable)
+	FOnJumpSignature OnJump;
+	UPROPERTY(BlueprintAssignable)
+	FOnSlideSignature OnSlide;
+	UPROPERTY(BlueprintAssignable)
+	FOnSlideStopSignature OnSlideStop;
+	UPROPERTY(BlueprintAssignable)
+	FOnDeathSignature OnDeath;
 
 protected:
 	virtual void PostInitializeComponents() override;
@@ -48,6 +60,7 @@ public:
 
 	virtual void Jump() override;
 
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool CanSlide() const { return !bIsSliding && !bChangingLanes && CanJump(); };
 	void			 Slide();
 	void			 SlideStop();
@@ -59,6 +72,7 @@ public:
 
 	UFUNCTION()
 	void OnPlayerHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	UFUNCTION(BlueprintCallable)
 	void PlayerDeath();
 
 	// UI stuff
@@ -108,7 +122,7 @@ protected:
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UCameraComponent* CameraComp;
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UTimeAbilityComponent* TimeAbilityComponent;
 	FTimerHandle		   TimerHandle_RestartLevel;
 	FTimerHandle		   TimerHandle_SlideStop;
