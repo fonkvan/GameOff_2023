@@ -61,11 +61,14 @@ public:
 	virtual void Jump() override;
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE bool CanSlide() const { return !bIsSliding && !bChangingLanes && CanJump(); };
-	void			 Slide();
-	void			 SlideStop();
+	bool CanSlide() const;
+	void Slide();
+	void SlideStop();
 	UFUNCTION(BlueprintImplementableEvent)
 	void SlideAnimNotify();
+
+	UFUNCTION(BlueprintCallable)
+	bool CanKick() const;
 
 	void SlowTime();
 	void ResetTimeDilation();
@@ -79,11 +82,15 @@ public:
 	FORCEINLINE UTimeAbilityComponent* GetTimeAbilityComponent() const { return TimeAbilityComponent; };
 	void							   TogglePauseMenu();
 
+	FText InputKeyText;
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Rail Movement")
 	bool bChangingLanes;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rail Movement", meta = (AllowPrivateAccess = "true"))
 	bool bIsSliding;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rail Movement", meta = (AllowPrivateAccess = "true"))
+	bool bIsKicking;
 	UPROPERTY(VisibleAnywhere, Category = "Rail Movement")
 	int CurrentLane;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Capsule Settings")
@@ -101,7 +108,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Rail Movement")
 	float LaneChangeErrorTolerance;
 	UPROPERTY(EditDefaultsOnly, Category = "Level Management")
-	float RestartLevelDelay;
+	float  RestartLevelDelay;
+	double Time_SlideEnded;
+	UPROPERTY(BlueprintReadWrite, Category = "Rail Movement", meta = (AllowPrivateAccess = "true"))
+	double Time_KickEnded;
+	UPROPERTY(EditDefaultsOnly, Category = "Rail Movement")
+	double Delay_TimeBetweenSlides;
+	UPROPERTY(EditDefaultsOnly, Category = "Rail Movement")
+	double Delay_TimeBetweenKicks;
 	UPROPERTY(VisibleAnywhere, Category = "Rail Movement")
 	FVector DesiredLocation;
 	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = "true"))
