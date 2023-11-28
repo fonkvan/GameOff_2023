@@ -26,14 +26,13 @@ protected:
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	void ActivateAbility();
-	void DeactivateAbility();
-	void UpdateMeter();
+	void		 ActivateAbility();
+	void		 DeactivateAbility();
+	void		 UpdateMeter();
 
 private:
 	// should be a value from 0.0 - 1.0 (1.0 is normal)
-	UPROPERTY(EditDefaultsOnly, Category = "Ability Modifiers", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Modifiers", meta = (AllowPrivateAccess = "true"))
 	float SlowAmount;
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Modifiers", meta = (AllowPrivateAccess = "true"))
 	float MaxMeterAmount;
@@ -47,7 +46,8 @@ private:
 	float UseAmount;
 	// How much is refilled per iteration
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Modifiers", meta = (AllowPrivateAccess = "true"))
-	float		 RefillAmount;
+	float RefillAmount;
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	bool		 bAbilityActive;
 	FTimerHandle TimerHandle_MeterUpdate;
 };

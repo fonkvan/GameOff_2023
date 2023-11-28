@@ -157,6 +157,7 @@ void ARailCharacter::Jump()
 	{
 		return;
 	}
+	OnJump.Broadcast();
 	Super::Jump();
 }
 
@@ -167,6 +168,7 @@ void ARailCharacter::Slide()
 		bIsSliding = true;
 		GetCapsuleComponent()->SetCapsuleHalfHeight(SlideCapsuleSize);
 		SlideAnimNotify();
+		OnSlide.Broadcast();
 	}
 	GetWorldTimerManager().SetTimer(TimerHandle_SlideStop, this, &ARailCharacter::SlideStop, SlideTime, false);
 }
@@ -176,6 +178,7 @@ void ARailCharacter::SlideStop()
 	bIsSliding = false;
 	GetCapsuleComponent()->SetCapsuleHalfHeight(DefaultCapsuleSize);
 	SlideAnimNotify();
+	OnSlideStop.Broadcast();
 }
 
 void ARailCharacter::SlowTime()
@@ -204,9 +207,9 @@ void ARailCharacter::PlayerDeath()
 	TimeAbilityComponent->DeactivateAbility();
 	SlideStop();
 	GetMesh()->SetSimulatePhysics(true);
+	OnDeath.Broadcast();
 	GetWorldTimerManager().SetTimer(TimerHandle_RestartLevel, Cast<APlayerController>(Controller), &APlayerController::RestartLevel, RestartLevelDelay, false);
 }
-
 
 void ARailCharacter::TogglePauseMenu()
 {
