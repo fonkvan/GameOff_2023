@@ -5,6 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
 #include "ActorComponents/TimeAbilityComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -15,6 +16,7 @@
 ARailCharacter::ARailCharacter()
 	: bChangingLanes(false)
 	, bIsSliding(false)
+	, bIsKicking(false)
 	, CurrentLane(0)
 	, DefaultCapsuleSize(88.f)
 	, SlideCapsuleSize(44.f)
@@ -24,6 +26,10 @@ ARailCharacter::ARailCharacter()
 	, LaneChangeSpeed(600.f)
 	, LaneChangeErrorTolerance(10)
 	, RestartLevelDelay(2.f)
+	, Time_SlideEnded(0.0)
+	, Time_KickEnded(0.0)
+	, Delay_TimeBetweenSlides(0.2)
+	, Delay_TimeBetweenKicks(0.2)
 	, DesiredLocation(FVector::Zero())
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -53,7 +59,16 @@ void ARailCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = MovementSpeed;
-	GetCapsuleComponent()->SetVisibility(true);
+	Time_SlideEnded = GetWorld()->GetTimeSeconds();
+	Time_KickEnded = GetWorld()->GetTimeSeconds();
+	TArray<FEnhancedActionKeyMapping> Mappings = DefaultMappingContext->GetMappings();
+	for (auto ActionKeyMapping : Mappings)
+	{
+		if (ActionKeyMapping.Action == Input_Interact)
+		{
+			InputKeyText = FText::FromString(ActionKeyMapping.Key.GetFName().ToString());
+		}
+	}
 }
 
 // Called every frame
@@ -148,17 +163,26 @@ bool ARailCharacter::ValidLaneChange(int direction) const
 
 void ARailCharacter::Interact()
 {
-	OnPlayerInteracted.Broadcast();
+	if (CanKick())
+	{
+		bIsKicking = true;
+		OnPlayerInteracted.Broadcast();	
+	}
 }
 
 void ARailCharacter::Jump()
 {
-	if (bIsSliding || bChangingLanes)
+	if (bIsSliding || bIsKicking || bChangingLanes)
 	{
 		return;
 	}
 	OnJump.Broadcast();
 	Super::Jump();
+}
+
+bool ARailCharacter::CanSlide() const
+{
+	return !bIsSliding && !bIsKicking && !bChangingLanes && CanJump() && ((GetWorld()->GetTimeSeconds() - Time_SlideEnded) >= Delay_TimeBetweenSlides);
 }
 
 void ARailCharacter::Slide()
@@ -169,8 +193,8 @@ void ARailCharacter::Slide()
 		GetCapsuleComponent()->SetCapsuleHalfHeight(SlideCapsuleSize);
 		SlideAnimNotify();
 		OnSlide.Broadcast();
+		GetWorldTimerManager().SetTimer(TimerHandle_SlideStop, this, &ARailCharacter::SlideStop, SlideTime, false);
 	}
-	GetWorldTimerManager().SetTimer(TimerHandle_SlideStop, this, &ARailCharacter::SlideStop, SlideTime, false);
 }
 
 void ARailCharacter::SlideStop()
@@ -179,6 +203,12 @@ void ARailCharacter::SlideStop()
 	GetCapsuleComponent()->SetCapsuleHalfHeight(DefaultCapsuleSize);
 	SlideAnimNotify();
 	OnSlideStop.Broadcast();
+	Time_SlideEnded = GetWorld()->GetTimeSeconds();
+}
+
+bool ARailCharacter::CanKick() const
+{
+	return !bIsSliding && !bIsKicking && !bChangingLanes && CanJump() && ((GetWorld()->GetTimeSeconds() - Time_KickEnded) >= Delay_TimeBetweenKicks);
 }
 
 void ARailCharacter::SlowTime()
