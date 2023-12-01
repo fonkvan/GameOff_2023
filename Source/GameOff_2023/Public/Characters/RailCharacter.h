@@ -19,6 +19,7 @@ class UInputAction;
 class UInputMappingContext;
 class USpringArmComponent;
 class UTimeAbilityComponent;
+class UAudioComponent;
 UCLASS()
 class GAMEOFF_2023_API ARailCharacter : public ACharacter
 {
@@ -138,6 +139,8 @@ protected:
 	UCameraComponent* CameraComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UTimeAbilityComponent* TimeAbilityComponent;
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
+	UAudioComponent* AudioComponent;
 	FTimerHandle		   TimerHandle_RestartLevel;
 	FTimerHandle		   TimerHandle_SlideStop;
 };

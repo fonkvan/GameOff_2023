@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "ActorComponents/TimeAbilityComponent.h"
+#include "Components/AudioComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -46,6 +47,9 @@ ARailCharacter::ARailCharacter()
 	CameraComp->SetupAttachment(SpringArmComp);
 
 	TimeAbilityComponent = CreateDefaultSubobject<UTimeAbilityComponent>(TEXT("Time Ability Component"));
+
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
+	AudioComponent->SetupAttachment(GetMesh());
 }
 
 void ARailCharacter::PostInitializeComponents()
@@ -226,6 +230,7 @@ void ARailCharacter::OnPlayerHit(UPrimitiveComponent* HitComponent, AActor* Othe
 {
 	if (OtherActor->IsA(ABlockingObstacleBase::StaticClass()))
 	{
+		AudioComponent->Play();
 		PlayerDeath();
 	}
 }
