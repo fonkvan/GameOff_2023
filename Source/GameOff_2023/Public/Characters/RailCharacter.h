@@ -135,12 +135,12 @@ protected:
 	UInputAction* Input_TogglePause;
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USpringArmComponent* SpringArmComp;
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UTimeAbilityComponent* TimeAbilityComponent;
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	UAudioComponent* AudioComponent;
-	FTimerHandle		   TimerHandle_RestartLevel;
-	FTimerHandle		   TimerHandle_SlideStop;
+	FTimerHandle	 TimerHandle_RestartLevel;
+	FTimerHandle	 TimerHandle_SlideStop;
 };

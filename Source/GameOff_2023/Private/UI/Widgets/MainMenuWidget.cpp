@@ -2,6 +2,8 @@
 
 #include "UI/Widgets/MainMenuWidget.h"
 #include "Components/Button.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 void UMainMenuWidget::NativeConstruct()
 {
@@ -22,4 +24,6 @@ void UMainMenuWidget::OnPlayClicked()
 
 void UMainMenuWidget::OnExitClicked()
 {
+	TEnumAsByte<EQuitPreference::Type> QuitPreference = EQuitPreference::Quit;
+	UKismetSystemLibrary::QuitGame(this, UGameplayStatics::GetPlayerController(this, 0), QuitPreference, true);
 }
